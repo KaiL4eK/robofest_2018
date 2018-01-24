@@ -1,8 +1,16 @@
 import matplotlib.pyplot as plt
 from skimage import feature, color, data, exposure
+import numpy as np
 
+from sklearn import neighbors, datasets
 
 image_clr = data.astronaut()
+
+iris = datasets.load_iris()
+X = iris.data[:, :2]
+y = iris.target
+
+print(np.unique(y))
 
 image = color.rgb2grey(image_clr)
 
