@@ -22,6 +22,8 @@ tests = []
 time_measure_sum   = 0
 time_measure_times = 0
 
+ppc = 8
+
 sign_names = os.listdir(main_path)
 for sign_type in sign_names:
 	print('Sign type: %s' % sign_type)
@@ -36,7 +38,7 @@ for sign_type in sign_names:
 		img = color.rgb2grey(img)
 
 		start = time.time()
-		fd = feature.hog(img, orientations=8, pixels_per_cell=(4, 4),
+		fd = feature.hog(img, orientations=8, pixels_per_cell=(ppc, ppc),
                     	 cells_per_block=(2, 2), transform_sqrt=True)
 		end = time.time()
 		time_measure_sum += end - start
@@ -60,7 +62,7 @@ for sign_type in sign_names:
 
 		idx += 1
 
-model = KNeighborsClassifier(n_neighbors=1)
+model = KNeighborsClassifier(n_neighbors=3, weights='distance')
 model.fit(data, labels)
 
 for test_case in tests:
@@ -70,7 +72,7 @@ for test_case in tests:
 	img = color.rgb2grey(img)
 
 	start = time.time()
-	fd = feature.hog(img, orientations=8, pixels_per_cell=(4, 4),
+	fd = feature.hog(img, orientations=8, pixels_per_cell=(ppc, ppc),
 					 cells_per_block=(2, 2), transform_sqrt=True)
 	end = time.time()
 	time_measure_sum += end - start
