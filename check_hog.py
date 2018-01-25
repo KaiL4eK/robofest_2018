@@ -15,8 +15,12 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
 
 import random
-import time
+
 import itertools
+
+import pickle
+
+import ml_utils
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -61,7 +65,6 @@ labels = []
 time_measure_sum   = 0
 time_measure_times = 0
 
-ppc = 8
 
 sign_names = os.listdir(main_path)
 for sign_type in sign_names:
@@ -75,17 +78,13 @@ for sign_type in sign_names:
 		img_grey = color.rgb2grey(img)
 		img_grey = exposure.equalize_hist(img_grey)
 		
-		start = time.time()
-		fd = feature.hog(img_grey, orientations=8, pixels_per_cell=(ppc, ppc),
-                    	 cells_per_block=(2, 2), transform_sqrt=True)
-		end = time.time()
-		time_measure_sum += end - start
-		time_measure_times += 1
+		fd = ml_utils.get_hog_features(img_grey)
 
 		data.append(fd)
 		labels.append(sign_type)
 
 neg_imgs = os.listdir(neg_path)
+print('Sign type: negative')
 for neg_img in neg_imgs:
 	for i in range(1):
 		img = cv2.imread(os.path.join(neg_path, neg_img))
@@ -104,12 +103,7 @@ for neg_img in neg_imgs:
 		img_grey = color.rgb2grey(part)
 		img_grey = exposure.equalize_hist(img_grey)
 
-		start = time.time()
-		fd = feature.hog(img_grey, orientations=8, pixels_per_cell=(ppc, ppc),
-	                	 cells_per_block=(2, 2), transform_sqrt=True)
-		end = time.time()
-		time_measure_sum += end - start
-		time_measure_times += 1
+		fd = ml_utils.get_hog_features(img_grey)
 
 		data.append(fd)
 		labels.append('negative')
@@ -121,6 +115,11 @@ print(np.unique(labels))
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
 model = svm.LinearSVC(C=1)
+model.fit(data, labels)
+
+# save the model
+filename = 'model.pickle'
+s = pickle.dumps(model, pickle.dump(model, open(filename, 'wb')))
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
 kf = KFold(n_splits=3, shuffle=True)
@@ -129,6 +128,7 @@ for train_index, test_index in kf.split(data):
 	X_train, X_test = [data[i] for i in train_index],   [data[i] for i in test_index]
 	y_train, y_test = [labels[i] for i in train_index], [labels[i] for i in test_index]
 
+	model = svm.LinearSVC(C=1)
 	model.fit( X_train, y_train )
 	print( model.score( X_test, y_test ) )
 
@@ -172,7 +172,7 @@ for train_index, test_index in kf.split(data):
 	# 	cv2.waitKey(0)
 
 
-print( 'Hog mean time: %fs' % (time_measure_sum / time_measure_times) )
+print( 'Hog mean time: %fs' % ml_utils.get_hog_mean_time() )
 
 exit(0)
 
