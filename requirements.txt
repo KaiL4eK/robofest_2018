@@ -2,5 +2,5 @@ matplotlib
 scipy
 scikit-learn
 scikit-image
-	
+more-itertools
 imutils

@@ -12,8 +12,45 @@ from sklearn import svm
 
 from sklearn.model_selection import KFold
 
+from sklearn.metrics import confusion_matrix
+
 import random
 import time
+import itertools
+
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
 main_path = 'data/signs_only'
 neg_path = 'data/negative'
@@ -83,7 +120,7 @@ print(np.unique(labels))
 # model = neighbors.KNeighborsClassifier(n_neighbors=3, weights='distance')
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
-model = svm.LinearSVC()
+model = svm.LinearSVC(C=1)
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
 kf = KFold(n_splits=3, shuffle=True)
@@ -95,27 +132,44 @@ for train_index, test_index in kf.split(data):
 	model.fit( X_train, y_train )
 	print( model.score( X_test, y_test ) )
 
-# for test_case in tests:
-# 	img = test_case[0]
-# 	label = test_case[1]
+	y_true = []
+	y_pred = []
 
-# 	img = color.rgb2grey(img)
+	for test_fd, test_label in zip( X_test, y_test ):
+		pred = model.predict(test_fd.reshape(1, -1))[0]
 
-# 	start = time.time()
-# 	fd = feature.hog(img, orientations=8, pixels_per_cell=(ppc, ppc),
-# 					 cells_per_block=(2, 2), transform_sqrt=True)
-# 	end = time.time()
-# 	time_measure_sum += end - start
-# 	time_measure_times += 1
+		y_true.append(test_label)
+		y_pred.append(pred.title().lower()) 
 
-# 	pred = model.predict(fd.reshape(1, -1))[0]
+	# http://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
+	CM = confusion_matrix(y_true, y_pred)
+	print(CM)
 
-# 	print(pred.title())
-# 	if label != pred.title().lower():
-# 		print('Achtung!!!')
+	# plt.figure()
+	# plot_confusion_matrix(CM, classes=labels, normalize=True,
+ #                      		title='Normalized confusion matrix')
+	# plt.show()
 
-# 	cv2.imshow('1', img)
-# 	cv2.waitKey(0)
+	# 	img = test_case[0]
+	# 	label = test_case[1]
+
+	# 	img = color.rgb2grey(img)
+
+	# 	start = time.time()
+	# 	fd = feature.hog(img, orientations=8, pixels_per_cell=(ppc, ppc),
+	# 					 cells_per_block=(2, 2), transform_sqrt=True)
+	# 	end = time.time()
+	# 	time_measure_sum += end - start
+	# 	time_measure_times += 1
+
+	# 	pred = model.predict(fd.reshape(1, -1))[0]
+
+	# 	print(pred.title())
+	# 	if label != pred.title().lower():
+	# 		print('Achtung!!!')
+
+	# 	cv2.imshow('1', img)
+	# 	cv2.waitKey(0)
 
 
 print( 'Hog mean time: %fs' % (time_measure_sum / time_measure_times) )
