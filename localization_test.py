@@ -55,6 +55,9 @@ if cap is None or not cap.isOpened():
     print('Failed to open file')
     exit(1)
 
+# fourcc = cv2.VideoWriter_fourcc(*'XVID')
+# out = cv2.VideoWriter('output.mp4',fourcc, 20.0, (640,480))
+
 while cap.isOpened():
     ret, frame = cap.read()
     if frame is None:
@@ -66,7 +69,7 @@ while cap.isOpened():
     work_frm = frame.copy()
     work_frm=cv2.GaussianBlur(work_frm, (5, 5), 0)
 
-    work_frm = cv2.resize(work_frm, (320, 240))
+    # work_frm = cv2.resize(work_frm, (320, 240))
     work_frm_hsv = cv2.cvtColor(work_frm, cv2.COLOR_BGR2HSV)
     work_frm_gray = cv2.cvtColor(work_frm, cv2.COLOR_BGR2GRAY)
     hsv_filt_blue_frm = cv2.inRange(work_frm_hsv, blue_min, blue_max)
@@ -116,11 +119,14 @@ while cap.isOpened():
     contours_area = []
     contours_cirles = []
 
+    up_limit    = 20000
+    low_limit   = 300
+
     centers = []
     # calculate area and filter into new array
     for con in contours:
         area = cv2.contourArea(con)
-        if 100 < area < 9000:
+        if low_limit < area < up_limit:
             contours_area.append(con)
             # x,y,w,h = cv2.boundingRect(con)
             # centers.append( (x + w/2, y + h/2) )
@@ -139,7 +145,7 @@ while cap.isOpened():
     dksize = 5
     blank_image = cv2.dilate(blank_image, 
                         kernel=np.ones((dksize,dksize),np.uint8), 
-                        iterations=3)
+                        iterations=4)
 
     im, contours, hierarchy = cv2.findContours(blank_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -147,12 +153,12 @@ while cap.isOpened():
 
     for con in contours:
         area = cv2.contourArea(con)
-        if 100 < area < 9000:
+        if low_limit < area < up_limit:
             contours_area.append(con)
             x,y,w,h = cv2.boundingRect(con)
             cv2.rectangle(work_frm, (x,y), (x+w,y+h), (255, 0, 255), 2)
 
-            window_img = resized[y:y+h, x:x+w]
+            window_img = work_frm[y:y+h, x:x+w]
             window_img = color.rgb2grey(window_img)
             window_img = exposure.equalize_hist(window_img)
 
@@ -161,7 +167,7 @@ while cap.isOpened():
             y_pred = model.predict(hf.reshape(1, -1))[0]
 
             if y_pred.title().lower() != 'negative':
-                cv2.putText(img, y_pred.title().lower(), (10,500), cv2.FONT_HERSHEY_SIMPLEX, 4, 
+                cv2.putText(work_frm, y_pred.title().lower(), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, 
                             (255,0,255), 2, cv2.LINE_AA)
             # centers.append( (x + w/2, y + h/2) )
 
@@ -182,10 +188,10 @@ while cap.isOpened():
 
     # --------- HOG ----------------
 
-    ppc = 8
-    fd = feature.hog(work_frm_gray, orientations=8, pixels_per_cell=(ppc, ppc),
-                     cells_per_block=(2, 2), transform_sqrt=True)
-    print(work_frm_gray.shape, len(fd))
+    # ppc = 8
+    # fd = feature.hog(work_frm_gray, orientations=8, pixels_per_cell=(ppc, ppc),
+    #                  cells_per_block=(2, 2), transform_sqrt=True)
+    # print(work_frm_gray.shape, len(fd))
 
     # 36192
     # 30x40 = 1200
@@ -235,4 +241,9 @@ while cap.isOpened():
                                # hough_frm,
                                # cv2.cvtColor(canny, cv2.COLOR_GRAY2BGR),
                                cv2.cvtColor(morph_frm, cv2.COLOR_GRAY2BGR))))
-    cv2.waitKey(0)
+    
+    # out.write(work_frm)
+    cv2.waitKey(1)
+
+# out.release()
+
