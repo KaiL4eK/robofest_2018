@@ -125,8 +125,8 @@ while cap.isOpened():
 			cv2.rectangle(resized, (x, y), (x + winW, y + winH), (0, 0, 255), 2)
 
 		# cv2.imshow("Part", window_img)
-	cv2.imshow("Window", resized)
-	cv2.waitKey(1)
+		cv2.imshow("Window", resized)
+		cv2.waitKey(1)
 		# time.sleep(0.02)
 
 		# cv2.waitKey(0)

@@ -36,10 +36,6 @@ val_Smax = 255
 val_Vmin = 40
 val_Vmax = 190
 
-def imageCallback(ros_data):
-    global frame
-    frame = bridge.imgmsg_to_cv2(ros_data, "bgr8")
-
 def main():
     cap = cv2.VideoCapture(args.filepath)
     if cap is None or not cap.isOpened():
@@ -84,33 +80,6 @@ def main():
         res_frame = cv2.morphologyEx(res_frame, cv2.MORPH_OPEN, open_kernel) # erosion followed by dilation
 
         # res_frame = cv2.morphologyEx(res_frame, cv2.MORPH_CLOSE, close_kernel) # dilation followed by erosion
-
-        # circles = cv2.HoughCircles(res_frame, cv2.HOUGH_GRADIENT, 1, 100)
-        # if circles is not None:
-        #     print("I'm here")
-        #     circles = np.round(circles[0, :]).astype("int")
-        #     for (x, y, r) in circles:
-        #         cv2.circle(res_frame, (x, y), r, (0, 0, 255), 4)
-        #         cv2.rectangle(res_frame, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
-        # #
-        # ret, thresh = cv2.threshold(res_frame, 127, 255, 0)
-
-        ok_cntr = []
-        image, contours, _ = cv2.findContours(res_frame, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-        for cnt in contours:
-            area = cv2.contourArea(cnt)
-
-            if area > 300:
-                x,y,w,h = cv2.boundingRect(cnt)
-                cv2.rectangle(work_frame, (x, y), (x + w, y + h), (0, 0, 255), -1)
-
-        for cnt in contours:
-            area = cv2.contourArea(cnt)
-
-            if area > 300:
-                cv2.drawContours(work_frame, [cnt], 0, (0,255,0), 3)
-
-        # print(area)
 
         res_frame = np.hstack((work_frame, 
                                cv2.cvtColor(frame_inRange, cv2.COLOR_GRAY2BGR),

@@ -47,6 +47,9 @@ args = parser.parse_args()
 
 # ref_img = cv2.imread(args.reference)
 
+filename = 'model.pickle'
+model = pickle.load(open(filename, 'rb'))
+
 cap = cv2.VideoCapture(args.filepath)
 if cap is None or not cap.isOpened():
     print('Failed to open file')
@@ -148,6 +151,18 @@ while cap.isOpened():
             contours_area.append(con)
             x,y,w,h = cv2.boundingRect(con)
             cv2.rectangle(work_frm, (x,y), (x+w,y+h), (255, 0, 255), 2)
+
+            window_img = resized[y:y+h, x:x+w]
+            window_img = color.rgb2grey(window_img)
+            window_img = exposure.equalize_hist(window_img)
+
+            hf = ml_utils.get_hog_features(window_img)
+
+            y_pred = model.predict(hf.reshape(1, -1))[0]
+
+            if y_pred.title().lower() != 'negative':
+                cv2.putText(img, y_pred.title().lower(), (10,500), cv2.FONT_HERSHEY_SIMPLEX, 4, 
+                            (255,0,255), 2, cv2.LINE_AA)
             # centers.append( (x + w/2, y + h/2) )
 
     # for con in contours_area:
