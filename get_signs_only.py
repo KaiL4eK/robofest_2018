@@ -37,7 +37,6 @@ def create_train_data():
         if name not in names:
             names.append(name)
 
-
     sign_idxs = [0] * len(names)
     print(names)
     print(sign_idxs)
@@ -76,7 +75,7 @@ def create_train_data():
         avg_imgs_width  += lr_x - ul_x
         avg_imgs_height += lr_y - ul_y
 
-        image_sign = cv2.resize(image_sign, (64, 64))
+        # image_sign = cv2.resize(image_sign, (64, 64))
 
         cv2.imwrite( 'data/signs_only/%s/%d.png' % (name, idx), image_sign )
 

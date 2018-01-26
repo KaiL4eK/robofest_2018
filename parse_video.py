@@ -28,10 +28,10 @@ if cap is None or not cap.isOpened():
 	print('Failed to open file')
 	exit(1)
 
-ret, frame = cap.read()
-if frame is None:
-	print('Failed to read frame')
-	exit(1)
+# ret, frame = cap.read()
+# if frame is None:
+# 	print('Failed to read frame')
+# 	exit(1)
 
 # https://www.pyimagesearch.com/2015/03/23/sliding-windows-for-object-detection-with-python-and-opencv/
 

@@ -20,16 +20,18 @@ color_trackbar_Smax = 'S__max'
 color_trackbar_Vmin = 'V_min'
 color_trackbar_Vmax = 'V_max'
 
-# val_Hmin = 56
-# val_Hmax = 87
-# val_Smin = 147
-# val_Smax = 229
-# val_Vmin = 124
-# val_Vmax = 198
+#red
+# val_Hmin = 0
+# val_Hmax = 21
+# val_Smin = 155
+# val_Smax = 255
+# val_Vmin = 122
+# val_Vmax = 190
 
+# blue
 val_Hmin = 91
 val_Hmax = 127
-val_Smin = 75
+val_Smin = 164 #75
 val_Smax = 255
 val_Vmin = 40
 val_Vmax = 190
