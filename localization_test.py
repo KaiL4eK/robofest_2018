@@ -1,4 +1,9 @@
 import cv2
+
+print(cv2.ocl.haveOpenCL())
+cv2.ocl.setUseOpenCL(True)
+print(cv2.ocl.useOpenCL())
+
 import imutils
 import time
 import pickle
@@ -70,6 +75,9 @@ while cap.isOpened():
     work_frm=cv2.GaussianBlur(work_frm, (5, 5), 0)
 
     # work_frm = cv2.resize(work_frm, (320, 240))
+    work_frm = cv2.resize(work_frm, (640, 480))
+    
+
     work_frm_hsv = cv2.cvtColor(work_frm, cv2.COLOR_BGR2HSV)
     work_frm_gray = cv2.cvtColor(work_frm, cv2.COLOR_BGR2GRAY)
     hsv_filt_blue_frm = cv2.inRange(work_frm_hsv, blue_min, blue_max)
@@ -113,62 +121,67 @@ while cap.isOpened():
     # # ------------------------------
 
     # ------------ Contour -----------
-    im, contours, hierarchy = cv2.findContours(morph_frm, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # im, contours, hierarchy = cv2.findContours(morph_frm, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    zones = []
-    contours_area = []
-    contours_cirles = []
+    # zones = []
+    # contours_area = []
+    # contours_cirles = []
 
-    up_limit    = 20000
-    low_limit   = 300
+    # up_limit    = 20000
+    # low_limit   = 300
 
-    centers = []
-    # calculate area and filter into new array
-    for con in contours:
-        area = cv2.contourArea(con)
-        if low_limit < area < up_limit:
-            contours_area.append(con)
-            # x,y,w,h = cv2.boundingRect(con)
-            # centers.append( (x + w/2, y + h/2) )
+    # centers = []
+    # # calculate area and filter into new array
+    # for con in contours:
+    #     area = cv2.contourArea(con)
+    #     if low_limit < area < up_limit:
+    #         contours_area.append(con)
+    #         # x,y,w,h = cv2.boundingRect(con)
+    #         # centers.append( (x + w/2, y + h/2) )
 
-    blank_image = np.zeros(hsv_filt_blue_frm.shape, np.uint8)
+    # blank_image = np.zeros(hsv_filt_blue_frm.shape, np.uint8)
 
-    cv2.drawContours(work_frm, contours_area, -1, (255, 255, 0), 4)
-
-
-    for cnt in contours_area:
-        x,y,w,h = cv2.boundingRect(cnt)
-        cv2.rectangle(work_frm, (x,y), (x+w,y+h), (255, 0, 0), 2)
-        cv2.rectangle(blank_image, (x,y), (x+w,y+h), 255, -1)
+    # cv2.drawContours(work_frm, contours_area, -1, (255, 255, 0), 4)
 
 
-    dksize = 5
-    blank_image = cv2.dilate(blank_image, 
-                        kernel=np.ones((dksize,dksize),np.uint8), 
-                        iterations=4)
+    # for cnt in contours_area:
+    #     x,y,w,h = cv2.boundingRect(cnt)
+    #     cv2.rectangle(work_frm, (x,y), (x+w,y+h), (255, 0, 0), 2)
+    #     cv2.rectangle(blank_image, (x,y), (x+w,y+h), 255, -1)
 
-    im, contours, hierarchy = cv2.findContours(blank_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    blank_image = cv2.cvtColor(blank_image, cv2.COLOR_GRAY2BGR)
+    # dksize = 5
+    # blank_image = cv2.dilate(blank_image, 
+    #                     kernel=np.ones((dksize,dksize),np.uint8), 
+    #                     iterations=4)
 
-    for con in contours:
-        area = cv2.contourArea(con)
-        if low_limit < area < up_limit:
-            contours_area.append(con)
-            x,y,w,h = cv2.boundingRect(con)
-            cv2.rectangle(work_frm, (x,y), (x+w,y+h), (255, 0, 255), 2)
+    # im, contours, hierarchy = cv2.findContours(blank_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-            window_img = work_frm[y:y+h, x:x+w]
-            window_img = color.rgb2grey(window_img)
-            window_img = exposure.equalize_hist(window_img)
+    # blank_image = cv2.cvtColor(blank_image, cv2.COLOR_GRAY2BGR)
 
-            hf = ml_utils.get_hog_features(window_img)
+    # for con in contours:
+    #     area = cv2.contourArea(con)
+    #     if low_limit < area < up_limit:
+    #         contours_area.append(con)
+    #         x,y,w,h = cv2.boundingRect(con)
+    #         cv2.rectangle(work_frm, (x,y), (x+w,y+h), (255, 0, 255), 2)
 
-            y_pred = model.predict(hf.reshape(1, -1))[0]
+    # ---------- Classification -----------------------
+            # window_img = work_frm[y:y+h, x:x+w]
+            # window_img = color.rgb2grey(window_img)
+            # window_img = exposure.equalize_hist(window_img)
 
-            if y_pred.title().lower() != 'negative':
-                cv2.putText(work_frm, y_pred.title().lower(), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, 
-                            (255,0,255), 2, cv2.LINE_AA)
+            # hf = ml_utils.get_hog_features(window_img)
+
+            # y_pred = model.predict(hf.reshape(1, -1))[0]
+
+            # if y_pred.title().lower() != 'negative':
+            #     cv2.putText(work_frm, y_pred.title().lower(), (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, 
+            #                 (255,0,255), 2, cv2.LINE_AA)
+
+
+    # -----------------------------------------------
+
             # centers.append( (x + w/2, y + h/2) )
 
     # for con in contours_area:
@@ -226,6 +239,17 @@ while cap.isOpened():
     # # cv2.drawMatchesKnn expects list of lists as matches.
     # img3 = cv2.drawMatchesKnn(work_frm, kp1, ref_img, kp2, good, None, flags=2)
 
+    # Initiate STAR detector
+    orb = cv2.ORB_create()
+
+    # find the keypoints with ORB
+    kp = orb.detect(work_frm_gray, None)
+
+    # compute the descriptors with ORB
+    kp, des = orb.compute(work_frm_gray, kp)
+
+    # draw only keypoints location,not size and orientation
+    img2 = cv2.drawKeypoints(work_frm, kp, None, color=(0,255,0), flags=0)
 
     # plt.imshow(img3)
     # plt.show()
@@ -237,8 +261,8 @@ while cap.isOpened():
 
     # cv2.imshow('1', img3)
     cv2.imshow('2', np.hstack((work_frm, 
-                               blank_image,
-                               # hough_frm,
+                               # blank_image,
+                               img2,
                                # cv2.cvtColor(canny, cv2.COLOR_GRAY2BGR),
                                cv2.cvtColor(morph_frm, cv2.COLOR_GRAY2BGR))))
     

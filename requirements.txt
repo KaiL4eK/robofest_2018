@@ -1,6 +1,15 @@
+keras
+tensorflow-gpu
+#tensorflow
+
 matplotlib
 scipy
 scikit-learn
 scikit-image
 more-itertools
 imutils
+
+requests
+graphviz
+pydot
+h5py
