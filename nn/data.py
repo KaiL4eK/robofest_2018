@@ -20,6 +20,14 @@ def print_process(index, total):
     if index % 100 == 0:
         print('Done: {0}/{1} images'.format(index, total))
 
+stats = {
+            'forward and right' : 0,
+            'forward'           : 0,
+            'right'             : 0,
+            'left'              : 0,
+            'brick'             : 0
+        }
+
 def create_train_data():
     total = 0
     i = 0
@@ -32,12 +40,38 @@ def create_train_data():
     images = os.listdir(files_base_path)
     ctx_files = [f for f in images if f.endswith('.ctx')]
 
-    total += len(ctx_files)
+    for file in ctx_files:
+        info   = file.split(';')
+        # ul_x   = max(0, int(float(info[1]) * scale_x))
+        # ul_y   = max(0, int(float(info[2]) * scale_y))
+        # width  = max(0, int(float(info[3]) * scale_x))
+        # height = max(0, int(float(info[4]) * scale_y))
+        name   = info[5].split('.')[0]
+
+        stats[name] += 1
+
+        if name == 'brick':
+            continue
+
+        total += 1
+
+    # total += len(ctx_files)
 
     imgs        = np.ndarray((total, npy_img_height, npy_img_width, 3), dtype=np.uint8)
     imgs_mask   = np.ndarray((total, npy_img_height, npy_img_width), dtype=np.uint8)
 
+    print(stats)
+
     for file in ctx_files:
+        info   = file.split(';')
+        # ul_x   = max(0, int(float(info[1]) * scale_x))
+        # ul_y   = max(0, int(float(info[2]) * scale_y))
+        # width  = max(0, int(float(info[3]) * scale_x))
+        # height = max(0, int(float(info[4]) * scale_y))
+        name   = info[5].split('.')[0]
+        if name == 'brick':
+            continue
+
         archive = zipfile.ZipFile(os.path.join(files_base_path, file), 'r')
 
         img_file  = archive.read('image.png')
