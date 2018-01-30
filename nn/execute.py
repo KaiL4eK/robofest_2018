@@ -36,15 +36,23 @@ def process_naming(frame, model):
     input = preprocess_img(frame)
     mask = model.predict(np.array([input]))[0] * 255.
 
+    # mask = masks[:,:,0]
     mask = cv2.resize(mask.astype('uint8'), (frame.shape[1], frame.shape[0]))
-    # print(mask.shape, input.shape)
-
     im, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         x,y,w,h = cv2.boundingRect(cnt)
         cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
 
     cv2.drawContours(frame, contours, -1, (255, 255, 0), 4)
+
+    # mask = masks[:,:,1]
+    # mask = cv2.resize(mask.astype('uint8'), (frame.shape[1], frame.shape[0]))
+    # im, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # for cnt in contours:
+    #     x,y,w,h = cv2.boundingRect(cnt)
+    #     cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
+
+    # cv2.drawContours(frame, contours, -1, (0, 255, 255), 4)
 
 
 def execute_model():

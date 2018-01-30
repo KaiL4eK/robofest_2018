@@ -31,8 +31,8 @@ args = parser.parse_args()
 
 
 def preprocess_regress(imgs, masks):
-	imgs_p   = np.ndarray((imgs.shape[0],  nn_np_in_size[0],  nn_np_in_size[1], 3), dtype=np.float32)
-	masks_p  = np.ndarray((masks.shape[0], nn_np_out_size[0], nn_np_out_size[1], 1), dtype=np.float32)
+	imgs_p   = np.ndarray((imgs.shape[0],  nn_np_in_size[0],  nn_np_in_size[1], nn_in_chnls), dtype=np.float32)
+	masks_p  = np.ndarray((masks.shape[0], nn_np_out_size[0], nn_np_out_size[1], nn_out_chnls), dtype=np.float32)
 
 	for i in range(imgs.shape[0]):
 		imgs_p[i]   = preprocess_img(imgs[i])
@@ -102,18 +102,16 @@ def train_regression():
 			print('Setup data generator...')
 			print('-'*30)
 
-			input_data, val_input_data, output_data, val_output_data = train_test_split(input_data, output_data, 
-																						test_size=0.1, shuffle=True, random_state=42)
+			input_data, val_input_data, output_data, val_output_data = \
+					train_test_split(input_data, output_data, test_size=0.5, shuffle=True, random_state=42)
 
 			print(input_data.shape, output_data.shape)
 			print(val_input_data.shape, val_output_data.shape)
 
-			data_gen_args = dict( #rotation_range=20,
-								  width_shift_range=0.1,
+			data_gen_args = dict( width_shift_range=0.1,
 								  height_shift_range=0.1,
 								  zoom_range=0.1,
 								  horizontal_flip=True,
-								  vertical_flip=True,
 								  fill_mode='constant',
 								  cval=0 )
 
