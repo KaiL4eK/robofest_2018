@@ -69,19 +69,22 @@ def get_network_model(lr=1e-3):
 
 	conv3 = Conv2D(64,(3,3),activation='relu',padding='same', kernel_initializer = 'he_normal')(drop2)
 
-	up7 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(conv3), conv2], axis=3)
-	conv7 = Conv2D(64, (3, 3), activation='relu', padding='same')(up7)
+	up7 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv3), conv2], axis=3)
+	conv7 = Conv2D(32, (3, 3), activation='relu', padding='same')(up7)
+	conv7 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv7)
+	drop2 = Dropout(0.25)(conv7)
 
-	up8 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(conv7), conv1], axis=3)
-	conv8 = Conv2D(32, (3, 3), activation='relu', padding='same')(up8)
+	up8 = concatenate([Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same')(drop2), conv1], axis=3)
+	conv8 = Conv2D(16, (5, 5), activation='relu', padding='same')(up8)
+	conv8 = Conv2D(16, (5, 5), activation='relu', padding='same')(conv8)
 
 	# norm2 = BatchNormalization()(drop2)
 
 	# conv3 = Conv2D(64,(3,3),activation='relu',padding='same', kernel_initializer = 'he_normal')(drop2)
 	# conv3 = Conv2D(64,(3,3),activation='relu',padding='same', kernel_initializer = 'he_normal')(conv3)
-	# drop3 = Dropout(0.5)(conv3)
+	drop3 = Dropout(0.5)(conv8)
 
-	out   = Conv2D(nn_out_chnls,(1,1),activation='sigmoid',padding='same', kernel_initializer = 'he_normal')(conv8)
+	out   = Conv2D(nn_out_chnls,(1,1),activation='sigmoid',padding='same', kernel_initializer = 'he_normal')(drop3)
 
 	model = Model(input, out)
 	
