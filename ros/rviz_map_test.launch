@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+    
+    <node pkg="map_server" type="map_server" name="static_map" args="/home/alexey/Dev/robofest_2018/ros/polygon_map.yaml">
+        <param name="frame" value="map" />
+    </node>
+    <node pkg="rviz" type="rviz" name="rviz" args="-d /home/alexey/Dev/robofest_2018/ros/lidar.rviz" />
+
+</launch>
