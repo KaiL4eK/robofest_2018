@@ -17,6 +17,8 @@
 	<node pkg="tf" type="static_transform_publisher" name="base_frame_2_lidar_link" args="0 0 0 0 0 0 /base_frame /lidar 100"/> 
 	<node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 /base_frame /nav 100"/>
 
+	<!-- http://wiki.ros.org/hector_mapping -->
+
 	<node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
 	    
 	    <!-- Frame names -->
