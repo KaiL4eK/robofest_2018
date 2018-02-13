@@ -51,6 +51,6 @@
         <param name="use_map_topic" value="true" />
         <param name="first_map_only" value="true" />
     </node>
-    <node pkg="rosservice" type="rosservice" name="global_loc" args="call --wait /global_localization"/>
+
 
 </launch>
