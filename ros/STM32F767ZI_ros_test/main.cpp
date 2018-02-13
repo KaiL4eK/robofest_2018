@@ -34,15 +34,18 @@ static THD_FUNCTION(Spinner, arg)
   ros_node.initNode();
 
   /* ROS publishers */
-  //  ros_node.advertise(topic_pub);
+  ros_node.advertise(topic_pub);
 
   /* ROS subscribers */
   ros_node.subscribe(topic_sub);
 
+  str_msg.data = "Hello!";
+
   while (true)
   {
     ros_node.spinOnce();
-    chThdSleepMilliseconds( 200 );
+    topic_pub.publish(&str_msg);
+    chThdSleepMilliseconds( 100 );
   }
 }
 

@@ -6,19 +6,6 @@
 #include <stdlib.h>
 #include "ros/msg.h"
 
-size_t
-strlen1(char const *s)
-{
-    size_t i;
-
-    i= 0;
-    while(s[i]) {
-        i+= 1;
-    }
-
-    return i;
-}
-
 namespace rosserial_msgs
 {
 
@@ -55,28 +42,21 @@ namespace rosserial_msgs
 
     virtual int serialize(unsigned char *outbuffer) const
     {
-//palToggleLine( LINE_LED1 );
       int offset = 0;
       *(outbuffer + offset + 0) = (this->topic_id >> (8 * 0)) & 0xFF;
       *(outbuffer + offset + 1) = (this->topic_id >> (8 * 1)) & 0xFF;
       offset += sizeof(this->topic_id);
-
-      uint32_t length_topic_name = 6;//strlen(this->topic_name);                // This one!
-
+      uint32_t length_topic_name = strlen(this->topic_name);
       varToArr(outbuffer + offset, length_topic_name);
       offset += 4;
       memcpy(outbuffer + offset, this->topic_name, length_topic_name);
       offset += length_topic_name;
-
-      uint32_t length_message_type = 15;//strlen(this->message_type);            // This one!
-
+      uint32_t length_message_type = strlen(this->message_type);
       varToArr(outbuffer + offset, length_message_type);
       offset += 4;
       memcpy(outbuffer + offset, this->message_type, length_message_type);
       offset += length_message_type;
-
-      uint32_t length_md5sum = 32;//strlen(this->md5sum);
-
+      uint32_t length_md5sum = strlen(this->md5sum);
       varToArr(outbuffer + offset, length_md5sum);
       offset += 4;
       memcpy(outbuffer + offset, this->md5sum, length_md5sum);

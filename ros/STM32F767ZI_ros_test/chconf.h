@@ -81,7 +81,7 @@
  * @note    The round robin preemption is not supported in tickless mode and
  *          must be set to zero in that case.
  */
-#define CH_CFG_TIME_QUANTUM                 10
+#define CH_CFG_TIME_QUANTUM                 0
 
 /**
  * @brief   Managed RAM size.
@@ -122,7 +122,7 @@
  * @note    This is not related to the compiler optimization options.
  * @note    The default is @p TRUE.
  */
-#define CH_CFG_OPTIMIZE_SPEED               FALSE
+#define CH_CFG_OPTIMIZE_SPEED               TRUE
 
 /** @} */
 
