@@ -16,15 +16,15 @@ void topic_cb( const std_msgs::UInt16& msg )
   palToggleLine( LINE_LED1 );
 }
 
-std_msgs::String str_msg;
-
 ros::NodeHandle ros_node;
 
+std_msgs::String str_msg;
 ros::Publisher                      topic_pub("string", &str_msg);
-ros::Subscriber<std_msgs::UInt16>   topic_sub("receiv", &topic_cb);
+
+ros::Subscriber<std_msgs::UInt16>   topic_sub("receiver_mysuper", &topic_cb);
 
 
-static THD_WORKING_AREA(waSpinner, 1024);
+static THD_WORKING_AREA(waSpinner, 128);
 static THD_FUNCTION(Spinner, arg)
 {
   (void)arg;
@@ -44,8 +44,8 @@ static THD_FUNCTION(Spinner, arg)
   while (true)
   {
     ros_node.spinOnce();
-    topic_pub.publish(&str_msg);
-    chThdSleepMilliseconds( 100 );
+//    topic_pub.publish(&str_msg);
+    chThdSleepMilliseconds( 1 );
   }
 }
 
@@ -82,7 +82,7 @@ PWMConfig pwm3conf = {
 // Delay in sec = tick/freq
 
 SerialConfig sdcfg = {
-      .speed = 115200,
+      .speed = 460800,
       .cr1 = 0,
       .cr2 = USART_CR2_LINEN,
       .cr3 = 0

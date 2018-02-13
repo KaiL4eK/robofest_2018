@@ -3,6 +3,6 @@
 <launch>
     <node pkg="rosserial_python" type="serial_node.py" name="car_serial" output="screen">
         <param name="port" value="/dev/ttyUSB0" /> 
-        <param name="baud" value="115200" /> 
+        <param name="baud" value="460800" /> 
     </node> 
 </launch>
