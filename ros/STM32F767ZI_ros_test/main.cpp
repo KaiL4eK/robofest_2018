@@ -45,7 +45,7 @@ static THD_FUNCTION(Spinner, arg)
   {
     ros_node.spinOnce();
 //    topic_pub.publish(&str_msg);
-    chThdSleepMilliseconds( 1 );
+    chThdSleepMilliseconds( 10 );
   }
 }
 
