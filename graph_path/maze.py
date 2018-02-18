@@ -91,16 +91,20 @@ class Maze:
                         if neighbour is not None and self.is_element_vacant(neighbour):
                             node.directions[i] = 1
 
+                    if elem == Maze.START_NODE_ID:
+                        self.start_node = node
+                        self.nodes[point.get_tuple()] = node
+                        continue
+
+                    if elem == Maze.END_NODE_ID:
+                        self.end_node   = node
+                        self.nodes[point.get_tuple()] = node
+                        continue
+
                     if sum(node.directions) == 2:
                         self.edges[point.get_tuple()] = node
                     else:
                         self.nodes[point.get_tuple()] = node
-
-                    if elem == Maze.START_NODE_ID:
-                        self.start_node = node
-
-                    if elem == Maze.END_NODE_ID:
-                        self.end_node   = node
 
         for key in self.nodes:
             curr_node  = self.nodes[key]
