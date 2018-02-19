@@ -10,7 +10,7 @@ class MazeNode:
 
 
 
-cell_colors = (255, 255, 255), (0, 255, 0)
+cell_colors = (255, 255, 255), (0, 255, 0), (128, 128, 255)
 cell_margin = 2
 
 class Point:
@@ -29,6 +29,7 @@ class Point:
 
 class Node:
 
+    node_idx_cntr = 0
     dir_deltas = [Point(0, 1),
                   Point(1, 0),
                   Point(0, -1),
@@ -39,6 +40,15 @@ class Node:
         self.directions = [0, 0, 0, 0]
         self.coord      = node_coord
         self.next_nodes = [None, None, None, None]
+
+        self.idx = -1
+
+    def __str__(self):
+        return 'id: {}'.format(self.idx)
+
+    def assignId(self):
+        self.idx            = Node.node_idx_cntr
+        Node.node_idx_cntr  += 1
 
     def get_source_idx(self, src_coord):
         delta = src_coord - self.coord
@@ -53,6 +63,9 @@ class Node:
 
     def edge_get_next_point(self, src_coord):
         src_dir_idx = self.get_source_idx(src_coord)
+        if src_dir_idx < 0:
+            print('Failed get_source_idx()')
+            exit( 1 )
 
         next_dir_idxs = [i for i, x in enumerate(self.directions) if i != src_dir_idx and x == 1]
         if len(next_dir_idxs) != 1:
@@ -85,6 +98,7 @@ class Maze:
                 elem = self.get_maze_element(point)
                 if self.is_element_vacant(elem):
                     node = Node(point)
+                    print(node)
 
                     for i, delta in enumerate(Node.dir_deltas):
                         neighbour = self.get_maze_element(point + delta)
@@ -93,11 +107,13 @@ class Maze:
 
                     if elem == Maze.START_NODE_ID:
                         self.start_node = node
+                        node.assignId()
                         self.nodes[point.get_tuple()] = node
                         continue
 
                     if elem == Maze.END_NODE_ID:
                         self.end_node   = node
+                        node.assignId()
                         self.nodes[point.get_tuple()] = node
                         continue
 
@@ -105,6 +121,7 @@ class Maze:
                         self.edges[point.get_tuple()] = node
                     else:
                         self.nodes[point.get_tuple()] = node
+                        node.assignId()
 
         for key in self.nodes:
             curr_node  = self.nodes[key]
@@ -135,7 +152,9 @@ class Maze:
 
 
         for key in sorted(self.nodes, key=lambda key: key[0]):
-            print(key, self.nodes[key], self.nodes[key].directions, self.nodes[key].next_nodes)
+            print('{}   \t{}'.format(key, self.nodes[key]))
+            for node in self.nodes[key].next_nodes:
+                print('\t{}'.format(node))
 
     def is_element_vacant(self, elem):
         if elem == 0 or elem == 1 or elem == 2:
@@ -166,12 +185,25 @@ class Maze:
     def render_maze(self):
         screen = pygame.display.set_mode((320, 320))
         screen.fill((0, 0, 0))
+        
+        font = pygame.font.Font(pygame.font.get_default_font(), 12)
 
         for key in self.edges:
             screen.fill(cell_colors[0], self.render_get_cell_rect(key, screen))
 
         for key in self.nodes:
-            screen.fill(cell_colors[1], self.render_get_cell_rect(key, screen))
+            rect = self.render_get_cell_rect(key, screen)
+
+            if self.nodes[key] == self.start_node or self.nodes[key] == self.end_node:
+                screen.fill(cell_colors[2], rect)
+            else:
+                screen.fill(cell_colors[1], rect)
+
+            text = font.render("{}".format(self.nodes[key].idx), True, (0, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.center = rect.center
+
+            screen.blit(text, text_rect)
 
         pygame.display.update()
 
