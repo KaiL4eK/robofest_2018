@@ -10,15 +10,13 @@
     <node pkg="costmap_2d" type="costmap_2d_node" name="costmap_node">
     	<rosparam file="/home/alexey/Dev/robofest_2018/ros/costmap_common_params.yaml" command="load" ns="/costmap_node/costmap" />
     </node>
-     
-    
 
     <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
        <param name="fixed_frame" value="/map"/>
        <param name="base_frame" value="/base_link"/>
     </node>
 
-    <!-- <include file="$(find amcl)/examples/amcl_diff.launch" /> -->
+    <include file="$(find amcl)/examples/amcl_diff.launch" />
 
     <node pkg="rviz" type="rviz" name="rviz"/>
 
