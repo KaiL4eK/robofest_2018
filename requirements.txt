@@ -13,3 +13,7 @@ requests
 graphviz
 pydot
 h5py
+
+# For graph path
+numpy
+pygame
