@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+    <node pkg="usb_cam" type="usb_cam_node" name="jtsn_cam" output="log">
+        <!-- <param name="video_device" value="/dev/v4l/by-path/platform-15700000.vi-video-index2" />  -->
+        <param name="video_device" value="/dev/v4l/by-id/usb-046d_0825_CA00E440-video-index0" /> 
+        <!-- <param name="pixel_format" value="yuyv" /> -->
+        <!-- <param name="baud" value="460800" />  -->
+    </node> 
+</launch>
