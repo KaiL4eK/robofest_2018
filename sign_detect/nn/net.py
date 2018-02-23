@@ -94,7 +94,7 @@ def get_network_model(lr=1e-3):
 	model.compile(optimizer=optimizer, loss=dice_coef_loss, metrics=[])
 
 	print_summary(model)
-	plot_model(model, show_shapes=True)
+	# plot_model(model, show_shapes=True)
 
 	return model
 

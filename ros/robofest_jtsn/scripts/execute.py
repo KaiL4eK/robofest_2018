@@ -1,27 +1,29 @@
+#!/usr/bin/env python2
 from __future__ import print_function
 
 # Enable CPU only
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-from imutils.video import FPS
+# from imutils.video import FPS
 import os
 import cv2
 import numpy as np
 import time
 from keras.models import Model, load_model, save_model
 
-import rects as R
-from net import *
+import nn.rects as R
+from nn.net import *
 import argparse
 
 # from skvideo.io import VideoCapture
 
 parser = argparse.ArgumentParser(description='Process video with ANN')
 parser.add_argument('weights', action='store', help='Path to weights file')
-parser.add_argument('filepath', action='store', help='Path to video file to process')
-parser.add_argument('-f', '--fps', action='store_true', help='Check fps')
 parser.add_argument('-p', '--pic', action='store_true', help='Process picture')
+parser.add_argument('-c', '--cam', action='store_true', help='Camera source')
+parser.add_argument('-f', '--filepath', action='store', help='Path to video file to process')
+
 
 args = parser.parse_args()
 
@@ -55,7 +57,12 @@ def process_naming(frame, model):
     # cv2.drawContours(frame, contours, -1, (0, 255, 255), 4)
 
 
+
 def execute_model():
+    start_time, end_time, full_time = 0, 0, 0
+    frame_cntr   = 0
+    measure_time = 1
+
     model = get_network_model()
 
     if args.pic:
@@ -72,8 +79,15 @@ def execute_model():
         cv2.waitKey(0)
         exit(1)
     else:
+        if args.cam:
+            cam_src = '/dev/v4l/by-id/usb-046d_0825_CA00E440-video-index0'
+        elif args.filapath:
+            cam_src = args.filepath
+        else:
+            print('No source set')
+            exit(1)
 
-        cap = cv2.VideoCapture(args.filepath)
+        cap = cv2.VideoCapture(cam_src)
         if cap is None or not cap.isOpened():
             print('Failed to open file')
             exit(1)
@@ -88,48 +102,31 @@ def execute_model():
 
         model.load_weights(args.weights)
 
-        if args.fps:
-            fps = FPS()
-            fps.start()
+        while(cap.isOpened()):
+            start_time = time.time()
 
-            bbox_obtain_time = 0
-            num_frames = 100
-            start = time.time()
-            for i in xrange(0, num_frames) :
-                ret, frame = cap.read()
-                if frame is None:
-                    exit(1)
+            ret, frame = cap.read()
+            if frame is None:
+                exit(1)
 
-                frame = cv2.resize(frame, (320, 240))
+            frame = cv2.resize(frame, (320, 240))
+            process_naming(frame, model)
+            
+            end_time = time.time()
 
-                # start_bbox = time.time()
+            cv2.imshow('frame',frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-                process_naming(frame, model)
-                
-                cv2.imshow('frame',frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+            full_time   += end_time - start_time
+            frame_cntr  += 1
 
-                fps.update()
+            if full_time > measure_time:
+                fps = float(frame_cntr) / full_time
+                full_time  = 0
+                frame_cntr = 0
 
-            fps.stop()
-
-            print('Estimated frames per second: {0}'.format(fps.fps()))
-            print('Elapsed time: {0} ms'.format(fps.elapsed() * 1000))
-
-        else:
-            while(cap.isOpened()):
-                ret, frame = cap.read()
-                if frame is None:
-                    exit(1)
-
-                frame = cv2.resize(frame, (320, 240))
-
-                process_naming(frame, model)
-                
-                cv2.imshow('frame',frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+                print(fps)
 
         cap.release()
         cv2.destroyAllWindows()
