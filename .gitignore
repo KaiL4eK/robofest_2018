@@ -4,3 +4,4 @@ data
 *.gv
 *pycache*
 *.avi
+*.pyc

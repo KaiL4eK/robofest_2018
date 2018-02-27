@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+    <group ns="jtsn">
+        <node pkg="usb_cam" type="usb_cam_node" name="sign_cam" output="log" respawn="true">
+            <param name="image_width" value="320" />
+            <param name="image_height" value="240" />
+            <param name="video_device" value="/dev/v4l/by-id/usb-046d_0825_CA00E440-video-index0" /> 
+            <param name="pixel_format" value="yuyv" />
+            <param name="io_method" value="mmap"/>
+        </node> 
+
+        <node pkg="robofest_jtsn" type="ros_detect_sign.py" name="sign_detector" output="screen">
+            <remap from="sign_image" to="sign_cam/image_raw"/>
+            <!-- <param name="weights" value="$(find robofest_jtsn)/scripts/" /> -->
+        </node>
+    </group>
+</launch>

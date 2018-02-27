@@ -86,7 +86,7 @@ for sign_type in sign_names:
 neg_imgs = os.listdir(neg_path)
 print('Sign type: negative')
 for neg_img in neg_imgs:
-	for i in range(1):
+	for i in range(3):
 		img = cv2.imread(os.path.join(neg_path, neg_img))
 
 		img_height, img_width, channels = img.shape
@@ -119,7 +119,7 @@ model.fit(data, labels)
 
 # save the model
 filename = 'model.pickle'
-s = pickle.dumps(model, pickle.dump(model, open(filename, 'wb')))
+s = pickle.dumps(model, pickle.dump(model, open(filename, 'wb'), protocol=2))
 
 # http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
 kf = KFold(n_splits=3, shuffle=True)
