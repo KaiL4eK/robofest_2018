@@ -37,11 +37,11 @@ from cv_bridge import CvBridge, CvBridgeError
 
 class ImageProcessor:
     def __init__(self):
-        self.sign_pub = rospy.Publisher("sign_name", String, queue_size=10)
-        self.img_pub = rospy.Publisher("image", Image, queue_size=10)
+        self.sign_pub = rospy.Publisher("sign_name", String)
+        self.img_pub = rospy.Publisher("image", Image)
 
         self.bridge = CvBridge()
-        rospy.Subscriber("sign_image", Image, self.callback, queue_size=10)
+        rospy.Subscriber("sign_image", Image, self.callback, queue_size=1)
 
     def callback(self, data):
         try:

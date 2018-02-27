@@ -29,6 +29,7 @@ class SignDetector:
         pred    = None
         coords  = None
 
+
         for cnt in contours:
             x,y,w,h = cv2.boundingRect(cnt)
 
@@ -36,8 +37,9 @@ class SignDetector:
             hog_features = mlu.get_hog_features(roi)
             y_pred = self.model_det.predict(hog_features.reshape(1, -1))[0]
 
-            hull = cv2.convexHull(cnt)
-            cv2.drawContours(frame, [hull], 0, (255, 255, 255), 4)
+            # Checking the hull
+            # hull = cv2.convexHull(cnt)
+            # cv2.drawContours(frame, [hull], 0, (255, 255, 255), 4)
 
             if y_pred.title().lower() != 'negative':
                 curr_area = cv2.contourArea(cnt)
@@ -62,14 +64,15 @@ class SignDetector:
 
         ### ----------------------------------
 
-        cv2.drawContours(frame, contours, -1, (255, 255, 0), 4)
+            cv2.drawContours(frame, contours, -1, (255, 255, 0), 4)
 
-        if pred is not None:
-            x,y,w,h = coords
-            cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
-            cv2.putText(frame, pred, (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,255), 2, cv2.LINE_AA)
+            if pred is not None:
+                x,y,w,h = coords
+                cv2.rectangle(frame, (x,y), (x+w,y+h), (255, 0, 0), 2)
+                cv2.putText(frame, pred, (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,255), 2, cv2.LINE_AA)
 
-        return pred
+            return pred
+
 
         # mask = masks[:,:,1]
         # mask = cv2.resize(mask.astype('uint8'), (frame.shape[1], frame.shape[0]))
