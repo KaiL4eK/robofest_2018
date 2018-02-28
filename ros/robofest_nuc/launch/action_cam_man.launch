@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+    <group ns="nuc">
+
+        <node pkg="robofest_nuc" type="action_cam_driver.py" name="action_cam_driver" output="screen" respawn="true"> 
+        </node>
+    </group>
+</launch>

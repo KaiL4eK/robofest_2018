@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+    <group ns="nuc">
+        <node pkg="robofest_nuc" type="lane_detect_car.py" name="lane_driver_driver" output="screen">
+        	<remap from="image" to="image_raw/compressed" />
+        	<remap from="dutycycle" to="control_raw" /> 
+        </node> 
+    </group>
+</launch>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+    <include file="$(find robofest_nuc)/launch/car_serial.launch" />
+    <include file="$(find robofest_nuc)/launch/action_cam_man.launch" />
+
+</launch>
