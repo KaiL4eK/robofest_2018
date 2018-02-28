@@ -8,10 +8,16 @@ project(robofest_nuc)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  genmsg
   roscpp
   rospy
   std_msgs
+  sensor_msgs
+  cv_bridge
+  image_transport
 )
+
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -119,6 +125,15 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
+
+set(CAMERA_SENSER_NODE_NAME action_cam)
+set(CAMERA_SENSER_NODE_SRC src/action_cam_cpp.cpp)
+
+add_executable(${CAMERA_SENSER_NODE_NAME} ${CAMERA_SENSER_NODE_SRC})
+add_dependencies(${CAMERA_SENSER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${CAMERA_SENSER_NODE_NAME}
+   ${catkin_LIBRARIES} ${OpenCV_LIBS}
+ )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
