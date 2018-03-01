@@ -11,7 +11,6 @@ import sys
 import rospy
 
 import numpy as np
-import time
 
 # from sensor_msgs.msgImg import Image
 # from cv_bridge import CvBridge, CvBridgeError
@@ -21,7 +20,7 @@ from std_msgs.msg import UInt16
 
 cam_id = 'nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)24/1 ! \
           nvvidconv flip-method=6 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink'
-cam_id = '/dev/v4l/by-id/usb-046d_0825_CA00E440-video-index0'
+# cam_id = 1
 
 cap = cv2.VideoCapture(cam_id)
 
@@ -30,26 +29,37 @@ if not cap.isOpened():
 
 rospy.init_node('jtsn_cam')
 
-videoPub = rospy.Publisher('/jtsn_cam/image_raw/compressed', CompressedImage, queue_size=10)
-videoFpsPub = rospy.Publisher('/jtsn_cam/image_fps', UInt16, queue_size=10)
+videoPub = rospy.Publisher('/jtsn_cam/image_raw/compressed', CompressedImage, queue_size=1)
+videoFpsPub = rospy.Publisher('/jtsn_cam/image_fps', UInt16, queue_size=1)
 
 msgImg = CompressedImage()
 rate = rospy.Rate(20)
 size = None
 
-start_time, end_time, full_time = 0, 0, 0
-frame_cntr   = 0
-measure_time = 0.01
+def show_fps(fps):
+    msgFps = UInt16()
+    msgFps.data = int(fps)
+
+    videoFpsPub.publish(msgFps)
+    print('FPS: %g' % fps)
+
+from utils.fps import *
+fps = FPS(cb_time=1, cb_func=show_fps)
 
 while cap.isOpened() and not rospy.is_shutdown():
     
-    start_time = time.time()
+    fps.start()
 
     meta, frame = cap.read()
+
+    if frame is None:
+        print('Failed')
 
     if size is None:
         size = frame.shape
         print(size)
+
+    frame = cv2.flip(frame, 0)
 
     # frame_gaus = cv2.GaussianBlur(frame, 3, gaussian_blur_sigmaX)
 
@@ -60,25 +70,8 @@ while cap.isOpened() and not rospy.is_shutdown():
     # I want to publish the Canny Edge Image and the original Image
     # msg_frame_edges = CvBridge().cv2_to_imgmsg(frame_edges)
 
-    end_time = time.time()
-    full_time   += end_time - start_time
-    frame_cntr  += 1
-    # print(full_time)
+    fps.stop()
 
-    if full_time > measure_time:
-        fps = float(frame_cntr) / full_time
-        full_time  = 0
-        frame_cntr = 0
-
-        msgFps = UInt16()
-        msgFps.data = int(fps)
-
-        videoFpsPub.publish(msgFps)
-
-
-    frame = cv2.flip(frame, 0)
-
-    msgImg.header.stamp = rospy.Time.now()
     msgImg.format = "jpeg"
     msgImg.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
 

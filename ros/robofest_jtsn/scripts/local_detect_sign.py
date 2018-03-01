@@ -39,11 +39,13 @@ def processPicrute(filepath):
     cv2.imshow('frame',frame)
     cv2.waitKey(0)
 
+def show_fps(fps):
+    print('FPS: %g' % fps)
+
+from utils.fps import *
+fps = FPS(cb_time=1, cb_func=show_fps)
 
 def processStream(source):
-    start_time, end_time, full_time = 0, 0, 0
-    frame_cntr   = 0
-    measure_time = 1
 
     cap = cv2.VideoCapture(source)
     if cap is None or not cap.isOpened():
@@ -58,30 +60,21 @@ def processStream(source):
         print('Failed to read frame')
         exit(1)
 
-    while(cap.isOpened()):
-        start_time = time.time()
+    while(cap.isOpened()):        
+        fps.start()
 
         ret, frame = cap.read()
         if frame is None:
             exit(1)
-
+            
         frame = cv2.resize(frame, (320, 240))
         detector.process_naming(frame)
         
-        end_time = time.time()
+        fps.stop()
 
         # cv2.imshow('frame',frame)
         # if cv2.waitKey(1) & 0xFF == ord('q'):
             # break
-
-        full_time   += end_time - start_time
-        frame_cntr  += 1
-
-        if full_time > measure_time:
-            fps = float(frame_cntr) / full_time
-            full_time, frame_cntr = 0, 0
-
-            print('FPS: %g' % fps)
 
     cap.release()
     cv2.destroyAllWindows()

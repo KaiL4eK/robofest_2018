@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+    <group ns="jtsn">
+        <node pkg="robofest_jtsn" type="jtsn_cam.py" name="jtsn_cam" output="screen">
+        </node> 
+
+    </group>
+</launch>
