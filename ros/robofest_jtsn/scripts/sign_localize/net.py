@@ -3,13 +3,19 @@ from keras.losses import binary_crossentropy, mean_squared_error, hinge
 from keras.layers import Input, concatenate, Conv2DTranspose, Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Dropout, Deconv2D, Flatten, Dense, BatchNormalization
 from keras.optimizers import Adam, SGD
 from keras.callbacks import ModelCheckpoint
-from keras import backend as K
 from keras.utils.layer_utils import print_summary
 from keras.utils.vis_utils import plot_model
 import numpy as np
 import cv2
 
+from keras import backend as K
 import tensorflow as tf
+
+# Fix for TX2
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+K.set_session(tf.Session(config=config))
+# end fix
 
 K.set_image_data_format('channels_last')  # TF dimension ordering in this code
 
