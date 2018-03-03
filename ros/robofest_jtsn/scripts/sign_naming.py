@@ -23,12 +23,12 @@ class SignDetector:
 
         # mask = masks[:,:,0]
         mask = cv2.resize(mask.astype('uint8'), (frame.shape[1], frame.shape[0]))
+
         im, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         area    = 0
         pred    = None
         coords  = None
-
 
         for cnt in contours:
             x,y,w,h = cv2.boundingRect(cnt)

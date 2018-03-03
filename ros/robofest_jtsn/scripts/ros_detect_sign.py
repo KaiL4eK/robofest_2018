@@ -11,6 +11,8 @@ import cv2
 import numpy as np
 import time
 
+from utils.fps import *
+
 import rospy
 rospy.init_node('sign_detector', anonymous=True)
 
@@ -33,42 +35,54 @@ from sensor_msgs.msg import CompressedImage
 from std_msgs.msg import String
 from cv_bridge import CvBridge, CvBridgeError
 
+sign_pub = rospy.Publisher("sign_name", String, queue_size=10)
+img_pub = rospy.Publisher("result_image/compressed", CompressedImage, queue_size=10)
+# img_pub = rospy.Publisher("result_image", Image, queue_size=1)
+
+bridge = CvBridge()
+msgImg = CompressedImage()
+msgImg.format = "jpeg"
+
 class ImageProcessor:
     def __init__(self):
-        self.sign_pub = rospy.Publisher("sign_name", String, queue_size=1)
-        self.img_pub = rospy.Publisher("result_image/compressed", CompressedImage, queue_size=1)
-
-        self.bridge = CvBridge()
         rospy.Subscriber("sign_image", Image, self.callback, queue_size=1)
+        self.cv_image = None
 
     def callback(self, data):
         try:
-            self.cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            self.cv_image = bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
 
-        frame = cv2.resize(self.cv_image, (320, 240))
-        
-        sign_name = detector.process_naming(frame)
 
-        if sign_name is None:
-            sign_name = 'nothing'
-
-        self.sign_pub.publish(sign_name)
-        
-        msgImg = CompressedImage()
-        msgImg.format = "jpeg"
-        msgImg.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
-        self.img_pub.publish(msgImg)
-
-        # self.img_pub.publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
-
+def print_fps(fps):
+    pass
+    # print('FPS: {}'.format(fps))
 
 if __name__ == '__main__':
 
     ic = ImageProcessor()
+    fps = FPS(2, print_fps)
 
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        print("Shutting down")
+    while not rospy.is_shutdown():
+        fps.start()
+
+        frame = ic.cv_image
+        if frame is None:
+            continue
+
+        frame = cv2.resize(frame, (320, 240))
+        
+        sign_name = detector.process_naming(frame)
+
+        fps.stop()
+
+        if sign_name is None:
+            sign_name = 'nothing'
+
+        sign_pub.publish(sign_name)
+        
+        msgImg.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
+        img_pub.publish(msgImg)
+
+        # img_pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))

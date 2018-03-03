@@ -67,7 +67,7 @@ def processStream(source):
         if frame is None:
             exit(1)
             
-        frame = cv2.resize(frame, (320, 240))
+        # frame = cv2.resize(frame, (320, 240))
         detector.process_naming(frame)
         
         fps.stop()
