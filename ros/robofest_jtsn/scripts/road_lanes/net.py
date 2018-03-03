@@ -19,18 +19,17 @@ K.set_session(tf.Session(config=config))
 
 K.set_image_data_format('channels_last')  # TF dimension ordering in this code
 
+
 k_decr = 0.8
 
-nn_in_img_size  = (160, 120)
+nn_in_img_size  = (320, 240)
 nn_in_chnls		= 3 
-nn_out_img_size = (160, 120)
+nn_out_img_size = (320, 240)
 nn_out_chnls	= 1
 
 nn_np_in_size = (nn_in_img_size[1], nn_in_img_size[0])
 nn_np_out_size = (nn_out_img_size[1], nn_out_img_size[0])
 
-# class_list = ['no_sign', 'forward', 'right', 'left', 'forward and right', 'brick', 'stop']
-# num_classes = len(class_list)
 
 # Output is resized, BGR, mean subtracted, [0, 1.] scaled by values
 def preprocess_img(img):
