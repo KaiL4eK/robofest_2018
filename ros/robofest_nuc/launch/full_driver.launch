@@ -3,8 +3,9 @@
 <launch>
 	<rosparam file="$(find robofest_nuc)/lane_config.yaml" command="load" ns="/car_lane" />
 
-    <include file="$(find robofest_nuc)/launch/car_serial.launch" />
-    <include file="$(find robofest_nuc)/launch/action_cam_man.launch" />
-    <include file="$(find robofest_nuc)/launch/lidar_driver.launch" />
-
+	<group ns="nuc">
+    	<include file="$(find robofest_nuc)/launch/car_serial.launch" />
+    	<include file="$(find robofest_nuc)/launch/action_cam_man.launch" />
+    	<include file="$(find robofest_nuc)/launch/lidar_driver.launch" />
+    </group>
 </launch>
