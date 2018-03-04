@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   cv_bridge
   image_transport
+  laser_geometry
 )
 
 find_package(OpenCV REQUIRED)
@@ -129,11 +130,20 @@ include_directories(
 set(CAMERA_SENSER_NODE_NAME action_cam)
 set(CAMERA_SENSER_NODE_SRC src/action_cam_cpp.cpp)
 
-add_executable(${CAMERA_SENSER_NODE_NAME} ${CAMERA_SENSER_NODE_SRC})
-add_dependencies(${CAMERA_SENSER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${CAMERA_SENSER_NODE_NAME}
-   ${catkin_LIBRARIES} ${OpenCV_LIBS}
- )
+# add_executable(${CAMERA_SENSER_NODE_NAME} ${CAMERA_SENSER_NODE_SRC})
+# add_dependencies(${CAMERA_SENSER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(${CAMERA_SENSER_NODE_NAME}
+   # ${catkin_LIBRARIES} ${OpenCV_LIBS}
+ # )
+
+set(LASERSCAN_CONVERT_NODE_NAME action_cam)
+set(LASERSCAN_CONVERT_NODE_SRC src/laserscan2pointcloud.cpp)
+
+# add_executable(${LASERSCAN_CONVERT_NODE_NAME} ${LASERSCAN_CONVERT_NODE_SRC})
+# add_dependencies(${LASERSCAN_CONVERT_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(${LASERSCAN_CONVERT_NODE_NAME}
+   # ${catkin_LIBRARIES}
+ # )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

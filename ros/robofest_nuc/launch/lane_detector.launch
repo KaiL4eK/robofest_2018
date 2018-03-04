@@ -3,7 +3,7 @@
 <launch>
     <group ns="nuc">
         <node pkg="robofest_nuc" type="lane_detect_car.py" name="lane_driver_driver" output="screen">
-        	<remap from="image" to="image_raw/compressed" />
+        	<!-- <remap from="image" to="image_raw/compressed" /> -->
         	<remap from="control" to="car/control_raw" /> 
         	<remap from="odomentry" to="car/odom_raw" /> 
         	<remap from="ranges" to="car/ranges_raw" /> 
