@@ -5,7 +5,8 @@
     	<!-- <remap from="image" to="image_raw/compressed" /> -->
     	<remap from="control" to="nuc/car/control_raw" /> 
     	<remap from="odomentry" to="nuc/car/odom_raw" /> 
-    	<remap from="ranges" to="nuc/car/ranges_raw" /> 
+    	<!-- <remap from="ranges" to="nuc/car/ranges_raw" />  -->
+    	<remap from="mode" to="nuc/car/mode" /> 
     	<remap from="scan" to="nuc/scan" /> 
     </node> 
 </launch>
